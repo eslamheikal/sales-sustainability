@@ -14,12 +14,38 @@ export class DatabaseService {
     static async init(): Promise<void> {
         if (!DatabaseService.pool) {
             const useSsl = process.env.POSTGRES_SSL === 'true';
-            const sslQuery = useSsl ? '?sslmode=require' : '';
-            const connectionString =
-                `postgresql://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_NAME}${sslQuery}`;
+            const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+            if (connectionString) {
+                let databaseUrl: URL;
+                try {
+                    databaseUrl = new URL(connectionString);
+                } catch {
+                    throw new Error('Invalid DATABASE_URL or POSTGRES_URL: expected a PostgreSQL connection URL');
+                }
+                if (!['postgres:', 'postgresql:'].includes(databaseUrl.protocol)) {
+                    throw new Error('Invalid DATABASE_URL or POSTGRES_URL: expected a PostgreSQL connection URL');
+                }
+            } else {
+                const requiredVariables = ['POSTGRES_HOST', 'POSTGRES_NAME', 'POSTGRES_USER', 'POSTGRES_PASSWORD'];
+                const missingVariables = requiredVariables.filter(name => !process.env[name]);
+                if (missingVariables.length) {
+                    throw new Error(`Missing database environment variables: ${missingVariables.join(', ')}`);
+                }
+            }
+
+            const port = Number(process.env.POSTGRES_PORT || 5432);
+            if (!connectionString && (!Number.isInteger(port) || port < 1 || port > 65535)) {
+                throw new Error('Invalid POSTGRES_PORT: expected a port between 1 and 65535');
+            }
 
             DatabaseService.pool = new Pool({
-                connectionString,
+                ...(connectionString ? { connectionString } : {
+                    host: process.env.POSTGRES_HOST,
+                    port,
+                    database: process.env.POSTGRES_NAME,
+                    user: process.env.POSTGRES_USER,
+                    password: process.env.POSTGRES_PASSWORD,
+                }),
                 ssl: useSsl ? { rejectUnauthorized: false } : false,
                 max: 10,
                 idleTimeoutMillis: 30000,
