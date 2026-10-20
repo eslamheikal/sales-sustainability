@@ -27,6 +27,14 @@
       "dest": "/api/health.ts"
     },
     {
+      "src": "/api/init",
+      "dest": "/api/init.ts"
+    },
+    {
+      "src": "/api/seed",
+      "dest": "/api/seed.ts"
+    },
+    {
       "src": "/api/product/([^/]+)",
       "dest": "/api/product.ts?id=$1"
     },
