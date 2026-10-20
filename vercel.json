@@ -19,6 +19,10 @@
       "dest": "/api/chat.ts"
     },
     {
+      "src": "/api/products",
+      "dest": "/api/products.ts"
+    },
+    {
       "src": "/api/health",
       "dest": "/api/health.ts"
     },
