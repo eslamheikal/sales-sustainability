@@ -1,0 +1,37 @@
+@if (product.id) {
+  <a
+    class="pcard pcard--link"
+    [routerLink]="['/products', product.id]"
+    [attr.aria-label]="'View ' + product.title"
+  >
+    <ng-container *ngTemplateOutlet="cardContent"></ng-container>
+  </a>
+} @else {
+  <article class="pcard" role="group" aria-roledescription="product card">
+    <ng-container *ngTemplateOutlet="cardContent"></ng-container>
+  </article>
+}
+
+<ng-template #cardContent>
+  <div class="pcard__media">
+    <img
+      class="pcard__img"
+      [src]="imageSrc()"
+      [alt]="product.title"
+      loading="lazy"
+      decoding="async"
+      (error)="onImgError()"
+      width="320"
+      height="180"
+    />
+  </div>
+
+  <h3 class="pcard__title">{{ product.title }}</h3>
+
+  <ul class="pcard__specs" *ngIf="safeSpecs().length" aria-label="Key specifications">
+    <li class="pcard__spec" *ngFor="let s of safeSpecs(); trackBy: trackByIdx" tabindex="3">
+      <span class="pcard__spec-label">{{ s.label }} : </span>
+      <span class="pcard__spec-value">{{ s.value }}</span>
+    </li>
+  </ul>
+</ng-template>

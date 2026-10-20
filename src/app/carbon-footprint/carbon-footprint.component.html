@@ -1,0 +1,270 @@
+@if (rows.length) {
+<section class="carbon-footprint" aria-label="Carbon Footprint">
+  <div class="carbon-footprint__title-row">
+    <h2 class="carbon-footprint__title">Carbon Footprint</h2>
+    <button type="button" class="carbon-footprint__benefits-button" (click)="openBenefits()">
+      Business benefits
+    </button>
+  </div>
+  <p class="carbon-footprint__intro">
+    Select your production options and order volume to estimate the carbon emissions for your order.
+  </p>
+
+  <div class="carbon-footprint__grid">
+    <form class="carbon-footprint__card carbon-footprint__config carbon-footprint__results"
+      aria-label="Order configuration">
+      <div class="carbon-footprint__card-heading">
+        <span class="carbon-footprint__step" aria-hidden="true">1</span>
+        <div>
+          <h3>Order Configuration</h3>
+          <p>Enter the production details for your order.</p>
+        </div>
+      </div>
+
+      <label class="carbon-footprint__field">
+        <span>Material</span>
+        <select [value]="material()" (change)="updateMaterial($event)">
+          <option value="virgin">Virgin plastic</option>
+          <option value="pcr-30">30% post-consumer recycled plastic</option>
+          <option value="pcr-50">50% post-consumer recycled plastic</option>
+          <option value="pcr-100">100% post-consumer recycled plastic</option>
+        </select>
+      </label>
+
+      <label class="carbon-footprint__energy-field">
+        <span>
+          <strong>Renewable-energy production site</strong>
+          <small>Production powered by renewable electricity</small>
+        </span>
+        <span class="carbon-footprint__checkbox-control">
+          <input type="checkbox" [checked]="renewableEnergySite()" (change)="updateRenewableEnergySite($event)" />
+        </span>
+      </label>
+
+      <label class="carbon-footprint__field">
+        <span>Order volume</span>
+        <span class="carbon-footprint__input-wrap">
+          <input type="number" min="1" step="100" [value]="orderVolume()" (input)="updateOrderVolume($event)" />
+          <span>units</span>
+        </span>
+      </label>
+
+      <label class="carbon-footprint__field">
+        <span>Transportation distance</span>
+        <span class="carbon-footprint__input-wrap">
+          <input type="number" min="0" step="50" [value]="transportationDistance()"
+            (input)="updateTransportationDistance($event)" />
+          <span>km</span>
+        </span>
+      </label>
+    </form>
+
+    <div class="carbon-footprint__card carbon-footprint__results" aria-live="polite">
+      <div class="carbon-footprint__card-heading">
+        <span class="carbon-footprint__step" aria-hidden="true">2</span>
+        <div>
+          <h3>Carbon Impact</h3>
+          <p>Estimated CO<sub>2</sub>e emissions for this order.</p>
+        </div>
+      </div>
+
+      <div class="carbon-footprint__total">
+        <span>Total Carbon Emissions</span>
+        <strong>{{ displayedTotalEmissions() | number: '1.0-2' }}</strong>
+        <span>{{ displayInTonnes() ? 'tonnes' : 'kg' }} CO<sub>2</sub>e</span>
+      </div>
+
+      <p class="carbon-footprint__formula">
+        {{ emissionsPerUnit() | number: '1.3-3' }} kg CO<sub>2</sub>e/unit
+        <span aria-hidden="true">×</span>
+        {{ orderVolume() | number: '1.0-0' }} units
+      </p>
+
+      <dl class="carbon-footprint__breakdown">
+        <div>
+          <dt>Total emissions per unit</dt>
+          <dd>{{ emissionsPerUnit() | number: '1.3-3' }} kg CO<sub>2</sub>e</dd>
+        </div>
+        <div>
+          <dt>Manufacturing</dt>
+          <dd>{{ manufacturingEmissions() | number: '1.3-3' }} kg CO<sub>2</sub>e</dd>
+        </div>
+        <div>
+          <dt>Transportation</dt>
+          <dd>{{ transportationEmissions() | number: '1.3-3' }} kg CO<sub>2</sub>e</dd>
+        </div>
+        <div>
+          <dt>Recycling / disposal</dt>
+          <dd>{{ endOfLifeEmissions | number: '1.3-3' }} kg CO<sub>2</sub>e</dd>
+        </div>
+      </dl>
+
+      <p class="carbon-footprint__method">Indicative estimate · ISO 14040 / ISO 14044</p>
+
+      <br />
+      
+      <button type="button" class="carbon-footprint__warning-button" (click)="openAssumptions()">
+        <span class="carbon-footprint__warning-icon" aria-hidden="true">!</span>
+        <span>
+          <strong>Calculation assumptions</strong>
+        </span>
+        <span class="carbon-footprint__warning-arrow" aria-hidden="true">›</span>
+      </button>
+    </div>
+  </div>
+
+  @if (benefitsOpen()) {
+  <div class="carbon-footprint__modal-backdrop" (click)="closeBenefits()">
+    <section class="carbon-footprint__modal carbon-footprint__slides-modal" role="dialog" aria-modal="true"
+      aria-label="Business benefits of carbon footprint" (click)="$event.stopPropagation()">
+      <button type="button" class="carbon-footprint__slides-close" aria-label="Close presentation"
+        (click)="closeBenefits()">×</button>
+      <button type="button" class="carbon-footprint__view-toggle" (click)="toggleReportView()">
+        {{ reportView() ? 'Slide view' : 'Report view' }}
+      </button>
+
+      @if (reportView()) {
+      <article class="carbon-footprint__report">
+        <header class="carbon-footprint__report-header">
+          <span class="carbon-footprint__report-eyebrow">Business report</span>
+          <h3>Business Benefits of Carbon Footprint</h3>
+          <p>
+            How measuring and reducing product carbon footprint creates value across
+            the business: market position, financial performance, risk, and relationships.
+          </p>
+        </header>
+
+        <nav class="carbon-footprint__report-summary" aria-label="Report contents">
+          @for (slide of slides; track slide.title; let i = $index) {
+          <span>{{ i + 1 }}. {{ slide.title }}</span>
+          }
+        </nav>
+
+        @for (slide of slides; track slide.title; let i = $index) {
+        <section class="carbon-footprint__report-section">
+          <span class="carbon-footprint__report-eyebrow">{{ i + 1 }} · {{ slide.category }}</span>
+          <h4><span aria-hidden="true">{{ slide.icon }}</span> {{ slide.title }}</h4>
+          <p>{{ slide.text }}</p>
+          <ul>
+            @for (point of slide.points; track point.heading) {
+            <li><strong>{{ point.heading }}:</strong> {{ point.detail }}</li>
+            }
+          </ul>
+          <p class="carbon-footprint__slide-takeaway">
+            <strong>Key takeaway:</strong> {{ slide.takeaway }}
+          </p>
+        </section>
+        }
+      </article>
+      } @else {
+      <div class="carbon-footprint__slide" aria-live="polite">
+        <span class="carbon-footprint__slide-icon" aria-hidden="true">{{ slides[slideIndex()].icon }}</span>
+        <span class="carbon-footprint__report-eyebrow">
+          {{ slides[slideIndex()].category }} · {{ slideIndex() + 1 }} / {{ slides.length }}
+        </span>
+        <h3>{{ slides[slideIndex()].title }}</h3>
+        <p>{{ slides[slideIndex()].text }}</p>
+        <div class="carbon-footprint__slide-points">
+          @for (point of slides[slideIndex()].points; track point.heading) {
+          <div class="carbon-footprint__slide-point">
+            <strong>{{ point.heading }}</strong>
+            <span>{{ point.detail }}</span>
+          </div>
+          }
+        </div>
+        <p class="carbon-footprint__slide-takeaway">
+          <strong>Key takeaway:</strong> {{ slides[slideIndex()].takeaway }}
+        </p>
+      </div>
+
+      <footer class="carbon-footprint__slides-nav">
+        <button type="button" (click)="previousSlide()" [disabled]="slideIndex() === 0">Previous</button>
+        <div class="carbon-footprint__dots">
+          @for (slide of slides; track slide.title; let i = $index) {
+          <button type="button" class="carbon-footprint__dot" [class.carbon-footprint__dot--active]="i === slideIndex()"
+            [attr.aria-label]="'Go to slide ' + (i + 1)" (click)="goToSlide(i)"></button>
+          }
+        </div>
+        @if (slideIndex() === slides.length - 1) {
+        <button type="button" (click)="closeBenefits()">Done</button>
+        } @else {
+        <button type="button" (click)="nextSlide()">Next</button>
+        }
+      </footer>
+      }
+    </section>
+  </div>
+  }
+
+  @if (assumptionsOpen()) {
+  <div class="carbon-footprint__modal-backdrop" (click)="closeAssumptions()">
+    <section class="carbon-footprint__modal carbon-footprint__assumptions-modal" role="dialog" aria-modal="true"
+      aria-labelledby="assumptions-title" (click)="$event.stopPropagation()">
+      <header class="carbon-footprint__modal-header carbon-footprint__assumptions-header">
+        <div>
+          <span class="carbon-footprint__report-eyebrow">Important calculation context</span>
+          <h3 id="assumptions-title">Calculation Assumptions</h3>
+          <p>Step-by-step calculation for your current order configuration.</p>
+        </div>
+        <button type="button" aria-label="Close assumptions" (click)="closeAssumptions()">×</button>
+      </header>
+
+      <div class="carbon-footprint__modal-body">
+        <ol class="carbon-footprint__assumptions-list">
+          <li>
+            <strong>Manufacturing</strong>
+            <span>Base × material factor ({{ materialLabel() }}) × energy factor ({{ renewableEnergySite() ? 'renewable'
+              : 'conventional' }})</span>
+            <code class="carbon-footprint__calc">
+                  {{ baseManufacturingEmissions | number: '1.2-2' }} × {{ materialFactor() | number: '1.2-2' }} × {{ energyFactor() | number: '1.2-2' }}
+                  = {{ manufacturingEmissions() | number: '1.3-3' }} kg CO<sub>2</sub>e/unit
+                </code>
+          </li>
+          <li>
+            <strong>Transportation</strong>
+            <span>Distance × emission factor per km</span>
+            <code class="carbon-footprint__calc">
+                  {{ transportationDistance() | number: '1.0-0' }} km × {{ transportationFactorPerKm }}
+                  = {{ transportationEmissions() | number: '1.3-3' }} kg CO<sub>2</sub>e/unit
+                </code>
+          </li>
+          <li>
+            <strong>Recycling / disposal</strong>
+            <span>Fixed placeholder value</span>
+            <code class="carbon-footprint__calc">
+                  = {{ endOfLifeEmissions | number: '1.3-3' }} kg CO<sub>2</sub>e/unit
+                </code>
+          </li>
+          <li>
+            <strong>Total emissions per unit</strong>
+            <span>Manufacturing + Transportation + Recycling / disposal</span>
+            <code class="carbon-footprint__calc">
+                  {{ manufacturingEmissions() | number: '1.3-3' }} + {{ transportationEmissions() | number: '1.3-3' }} + {{ endOfLifeEmissions | number: '1.3-3' }}
+                  = {{ emissionsPerUnit() | number: '1.3-3' }} kg CO<sub>2</sub>e/unit
+                </code>
+          </li>
+          <li>
+            <strong>Total carbon emissions</strong>
+            <span>Emissions per unit × order volume</span>
+            <code class="carbon-footprint__calc">
+                  {{ emissionsPerUnit() | number: '1.3-3' }} × {{ orderVolume() | number: '1.0-0' }} units
+                  = {{ totalEmissions() | number: '1.0-2' }} kg CO<sub>2</sub>e
+                  @if (displayInTonnes()) {
+                    ({{ displayedTotalEmissions() | number: '1.0-2' }} tonnes)
+                  }
+                </code>
+          </li>
+        </ol>
+
+        <p class="carbon-footprint__assumptions-disclaimer">
+          These values are placeholders until product-specific sustainability data is provided.
+        </p>
+      </div>
+      <footer class="carbon-footprint__modal-actions">
+        <button type="button" (click)="closeAssumptions()">Close</button>
+      </footer>
+    </section>
+  </div>
+  }
+</section>
+}

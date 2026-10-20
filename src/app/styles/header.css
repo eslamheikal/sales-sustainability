@@ -1,0 +1,144 @@
+/* Header Styles */
+.header {
+  position: relative;
+  z-index: 1000;
+  background: #ffffff;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+.utility-bar {
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.utility-bar-inner {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.utility-links {
+  display: flex;
+  list-style: none;
+  gap: 24px;
+  align-items: center;
+}
+
+.utility-link {
+  color: #4a4a4a;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 400;
+  transition: color 0.2s ease;
+}
+
+.utility-link:hover {
+  color: #00857c;
+}
+
+.utility-search {
+  display: flex;
+  align-items: center;
+  color: #333333;
+}
+
+.navbar {
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.nav-left {
+  flex: 0 0 auto;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.logo img {
+  height: 36px;
+  width: auto;
+  display: block;
+}
+
+.logo-text {
+  font-size: 32px;
+  font-weight: 400;
+  color: #3d3d3d;
+  letter-spacing: -0.5px;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.logo-icon {
+  width: 28px;
+  height: 22px;
+  background: linear-gradient(135deg, #00857c 0%, #26a69a 100%);
+  clip-path: polygon(0% 15%, 55% 0%, 100% 35%, 72% 100%, 0% 85%);
+}
+
+.nav-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-menu {
+  display: flex;
+  list-style: none;
+  gap: 28px;
+  align-items: center;
+}
+
+.nav-item {
+  position: relative;
+}
+
+.nav-link {
+  color: #3d3d3d;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: #00857c;
+}
+
+.caret {
+  font-size: 9px;
+  margin-left: 2px;
+  color: #666666;
+}
+
+.nav-right {
+  flex: 0 0 auto;
+}
+
+.contact-btn {
+  background: #00857c;
+  color: #ffffff;
+  border: none;
+  padding: 12px 22px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border-radius: 0;
+}
+
+.contact-btn:hover {
+  background: #006b64;
+}

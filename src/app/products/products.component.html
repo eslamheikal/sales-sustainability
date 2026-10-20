@@ -1,0 +1,136 @@
+<div class="products-page">
+  <div class="container">
+    <header class="products-header">
+      <h1 class="products-title">Products</h1>
+      <p class="products-intro">
+        Aptar's product portfolio includes a wide range of innovative dispensing solutions
+        for the beauty, personal care, home care, food and beverage, and pharmaceutical
+        markets. From fragrance sprays to ketchup caps to healthcare solutions, we have
+        the right product for your needs.
+      </p>
+    </header>
+
+    <section class="search-section" aria-label="Search products">
+      <h2 class="search-label">SEARCH PRODUCTS</h2>
+      <div class="search-bar">
+        <input
+          type="search"
+          class="search-input"
+          placeholder="Search by... (Market, Feature, Neck Finish, etc.)"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="onSearchChange($event)"
+          aria-label="Search products"
+        />
+        <button type="button" class="search-btn" aria-label="Search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+            <path d="M20 20L16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <div class="products-layout">
+      <aside class="filters-sidebar" aria-label="Filter products">
+        <h2 class="filters-title">Filter Products By</h2>
+
+        @for (group of filterGroups(); track group.id) {
+          <div class="filter-group">
+            <button
+              type="button"
+              class="filter-group-header"
+              (click)="toggleFilterGroup(group.id)"
+              [attr.aria-expanded]="isFilterExpanded(group.id)"
+            >
+              <span>{{ group.label }}</span>
+              <span class="filter-toggle">{{ isFilterExpanded(group.id) ? '−' : '+' }}</span>
+            </button>
+
+            @if (isFilterExpanded(group.id) && group.options.length > 0) {
+              <ul class="filter-options">
+                @for (option of group.options; track option) {
+                  <li>
+                    <label class="filter-option">
+                      <input
+                        type="checkbox"
+                        [checked]="isCategorySelected(option, group.id)"
+                        (change)="toggleCategory(option, group.id)"
+                      />
+                      <span>{{ option }}</span>
+                    </label>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        }
+      </aside>
+
+      <section class="products-results" aria-label="Product results">
+        @if (loading()) {
+          <p class="status-message">Loading products...</p>
+        } @else if (error()) {
+          <p class="status-message status-error">{{ error() }}</p>
+        } @else {
+          <p class="results-count">
+            Showing {{ showingFrom() }}-{{ showingTo() }} of {{ filteredProducts().length }}
+          </p>
+
+          @if (paginatedProducts().length === 0) {
+            <p class="status-message">No products match your search.</p>
+          } @else {
+            <div class="products-grid">
+              @for (product of paginatedProducts(); track product.id) {
+                <a
+                  class="catalog-card"
+                  [routerLink]="['/products', product.id]"
+                  [attr.aria-label]="'View ' + (product.name ?? 'product')"
+                >
+                  <div class="catalog-card__inner">
+                    <div class="catalog-card__media">
+                      <img
+                        class="catalog-card__img"
+                        [src]="product.image_url || placeholderImage"
+                        [alt]="product.name ?? 'Product'"
+                        loading="lazy"
+                        (error)="onImageError($event)"
+                      />
+                    </div>
+                    <div class="catalog-card__body">
+                      <h3 class="catalog-card__title">{{ product.name }}</h3>
+                      @if (product.category) {
+                        <p class="catalog-card__category">{{ product.category }}</p>
+                      }
+                    </div>
+                  </div>
+                </a>
+              }
+            </div>
+
+            @if (totalPages() > 1) {
+              <nav class="pagination" aria-label="Product pages">
+                <button
+                  type="button"
+                  class="pagination-btn"
+                  [disabled]="currentPage() === 1"
+                  (click)="goToPage(currentPage() - 1)"
+                >
+                  Previous
+                </button>
+                <span class="pagination-info">Page {{ currentPage() }} of {{ totalPages() }}</span>
+                <button
+                  type="button"
+                  class="pagination-btn"
+                  [disabled]="currentPage() === totalPages()"
+                  (click)="goToPage(currentPage() + 1)"
+                >
+                  Next
+                </button>
+              </nav>
+            }
+          }
+        }
+      </section>
+    </div>
+  </div>
+</div>

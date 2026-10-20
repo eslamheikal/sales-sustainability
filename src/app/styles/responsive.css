@@ -1,0 +1,82 @@
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .nav-menu {
+    gap: 18px;
+  }
+
+  .hero-inner {
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
+}
+
+@media (max-width: 968px) {
+  .nav-center {
+    display: none;
+  }
+
+  .navbar-inner {
+    justify-content: space-between;
+  }
+
+  .hero-section {
+    min-height: calc(100vh - 110px);
+  }
+
+  .video-bg {
+    object-position: center;
+  }
+
+  .hero-overlay {
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.75) 0%,
+      rgba(0, 0, 0, 0.55) 100%
+    );
+  }
+
+  .hero-content {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .utility-bar {
+    display: none;
+  }
+
+  .hero-description {
+    font-size: 16px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .hero-btn {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* Responsive adjustments for chat widget */
+@media (max-width: 600px) {
+  .chat-window {
+    width: calc(100vw - 40px);
+    height: 500px;
+    bottom: 70px;
+    right: 20px;
+    left: 20px;
+  }
+
+  .chat-toggle {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+}

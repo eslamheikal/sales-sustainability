@@ -1,0 +1,96 @@
+<header class="header">
+  <div class="utility-bar">
+    <div class="container utility-bar-inner">
+      <ul class="utility-links">
+        <li><a href="#" class="utility-link">News &amp; Events</a></li>
+        <li><a href="#" class="utility-link">Resources</a></li>
+        <li><a href="#" class="utility-link">Careers</a></li>
+        <li><a href="#" class="utility-link">Investors</a></li>
+        <li>
+          <a href="#" class="utility-link utility-search" aria-label="Search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+              <path d="M20 20L16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <div class="nav-left">
+        <a routerLink="/" class="logo">
+          <img src="assets/logo.svg" alt="Aptar Logo">
+        </a>
+      </div>
+      <div class="nav-center">
+        <ul class="nav-menu">
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link">Business Areas <span class="caret">▼</span></a>
+          </li>
+          <li class="nav-item dropdown">
+            <a routerLink="/products" class="nav-link">Products <span class="caret">▼</span></a>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link">Services <span class="caret">▼</span></a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">Innovation &amp; Insights</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link">Sustainability <span class="caret">▼</span></a>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link">About Aptar <span class="caret">▼</span></a>
+          </li>
+        </ul>
+      </div>
+      <div class="nav-right">
+        <button class="contact-btn" type="button">CONTACT US</button>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main class="main-content">
+  <router-outlet />
+</main>
+
+<!-- Chat Widget -->
+<div class="chat-widget">
+  <!-- Chat Window -->
+  <div class="chat-window" [class.open]="isChatOpen()" [class.maximizing]="isChatMaximizingState()" [class.maximized]="isChatMaximized()">
+    <div class="chat-header">
+      <div class="chat-title">
+        <div class="chat-avatar">🤖</div>
+        <div>
+          <h4>Aptar Assistant</h4>
+          <span class="chat-status">Online</span>
+        </div>
+      </div>
+      <div class="chat-controls">
+        <button class="chat-control-btn" (click)="toggleMaximize()" [title]="isChatMaximized() ? 'Minimize' : 'Maximize'">
+          @if (!isChatMaximized()) {
+            <span>⛶</span>
+          }
+          @if (isChatMaximized()) {
+            <span>⛶</span>
+          }
+        </button>
+        <button class="chat-close" (click)="toggleChat()">×</button>
+      </div>
+    </div>
+    <div class="chat-content">
+      <app-chat></app-chat>
+    </div>
+  </div>
+
+  <!-- Chat Toggle Button -->
+  <!-- <button class="chat-toggle" (click)="toggleChat()" [class.hidden]="isChatOpen()">
+    <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
+      <path d="M8 12H16M8 8H16M8 16H12M12 20L8 16H4C3.45 16 3 15.55 3 15V5C3 4.45 3.45 4 4 4H20C20.55 4 21 4.45 21 5V15C21 15.55 20.55 16 20 16H16L12 20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button> -->
+</div>

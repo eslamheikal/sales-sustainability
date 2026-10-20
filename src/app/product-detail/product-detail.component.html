@@ -1,0 +1,68 @@
+<div class="product-detail-page">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a routerLink="/products" class="breadcrumb-link">Products</a>
+      <span class="breadcrumb-separator" aria-hidden="true">/</span>
+      @if (product(); as currentProduct) {
+        <span class="breadcrumb-current">{{ currentProduct.name }}</span>
+      } @else {
+        <span class="breadcrumb-current">Product</span>
+      }
+    </nav>
+
+    @if (loading()) {
+      <p class="status-message">Loading product...</p>
+    } @else if (error()) {
+      <div class="status-panel">
+        <p class="status-message status-error">{{ error() }}</p>
+        <a routerLink="/products" class="back-link">Back to products</a>
+      </div>
+    } @else if (product(); as currentProduct) {
+      <article class="product-detail">
+        <div class="product-detail__hero">
+          <div class="product-detail__summary">
+            @if (currentProduct.category) {
+              <p class="product-detail__category">{{ currentProduct.category }}</p>
+            }
+            <h1 class="product-detail__title">{{ currentProduct.name }}</h1>
+            @if (currentProduct.description) {
+              <p class="product-detail__description">{{ currentProduct.description }}</p>
+            }
+            <a routerLink="/products" class="back-link">← Back to all products</a>
+          </div>
+
+          <div class="product-detail__media">
+            <img
+              class="product-detail__img"
+              [src]="currentProduct.image_url || placeholderImage"
+              [alt]="currentProduct.name ?? 'Product'"
+              (error)="onImageError($event)"
+            />
+          </div>
+        </div>
+
+        @if (specificationRows(currentProduct); as rows) {
+          @if (rows.length) {
+            <section class="product-detail__section" aria-label="Product Specifications">
+              <h2 class="product-detail__section-title">Product Specifications</h2>
+              <div class="product-detail__table-wrap">
+                <table class="product-detail__table">
+                  <tbody>
+                    @for (row of rows; track row.label) {
+                      <tr>
+                        <th scope="row">{{ row.label }}</th>
+                        <td>{{ row.value }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          }
+        }
+
+        <app-carbon-footprint [rows]="carbonFootprintRows" />
+      </article>
+    }
+  </div>
+</div>

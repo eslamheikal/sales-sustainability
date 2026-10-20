@@ -1,0 +1,244 @@
+.product-detail-page {
+  background: #ffffff;
+  padding: 32px 0 80px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 32px;
+  font-size: 14px;
+}
+
+.breadcrumb-link {
+  color: #00857c;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.breadcrumb-link:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb-separator {
+  color: #999999;
+}
+
+.breadcrumb-current {
+  color: #666666;
+}
+
+.status-message {
+  font-size: 16px;
+  color: #666666;
+}
+
+.status-error {
+  color: #b42318;
+}
+
+.status-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  font-size: 14px;
+  font-weight: 600;
+  color: #00857c;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.product-detail__hero {
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 420px);
+  gap: 48px;
+  align-items: start;
+  margin-bottom: 48px;
+}
+
+.product-detail__media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  padding: 32px;
+  background: #fafafa;
+  border: 1px solid #e4e4e4;
+  overflow: hidden;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease;
+}
+
+.product-detail__media:hover,
+.product-detail__media:focus-within {
+  transform: translateY(-6px);
+  border-color: #00857c;
+  background: #f4fbfb;
+  box-shadow:
+    0 12px 28px rgba(0, 133, 124, 0.12),
+    0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.product-detail__img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.35s ease;
+}
+
+.product-detail__media:hover .product-detail__img,
+.product-detail__media:focus-within .product-detail__img {
+  transform: scale(1.06);
+}
+
+.product-detail__category {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: #00857c;
+  margin: 0 0 12px;
+}
+
+.product-detail__title {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  color: #3d3d3d;
+  line-height: 1.2;
+  margin: 0 0 20px;
+}
+
+.product-detail__description {
+  font-size: 16px;
+  line-height: 1.75;
+  color: #4a4a4a;
+  margin: 0 0 28px;
+}
+
+.product-detail__section {
+  padding-top: 32px;
+}
+
+.product-detail__section + .product-detail__section {
+  margin-top: 32px;
+}
+
+.product-detail__section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #3d3d3d;
+  margin: 0 0 12px;
+}
+
+.product-detail__section-intro {
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #666666;
+}
+
+.product-detail__table-wrap {
+  overflow-x: auto;
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  padding: 20px;
+}
+
+.product-detail__table {
+  width: 100%;
+  margin-bottom: 0;
+  border-collapse: collapse;
+  font-size: 15px;
+  color: #3d3d3d;
+}
+
+.product-detail__table th,
+.product-detail__table td {
+  padding: 10px 15px;
+  border: none;
+  vertical-align: middle;
+  text-align: left;
+}
+
+.product-detail__table tbody th {
+  width: 35%;
+  min-width: 180px;
+  font-weight: 700;
+  color: #3d3d3d;
+  border-right: 1px solid #e8e8e8;
+}
+
+.product-detail__table tbody td {
+  font-weight: 400;
+  color: #3d3d3d;
+}
+
+.product-detail__table tbody tr:nth-of-type(odd) > * {
+  background-color: #f7f7f7;
+}
+
+.product-detail__table tbody tr:nth-of-type(even) > * {
+  background-color: #ffffff;
+}
+
+@media (max-width: 900px) {
+  .product-detail__hero {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .product-detail__summary {
+    order: 2;
+  }
+
+  .product-detail__media {
+    order: 1;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-detail__media,
+  .product-detail__img {
+    transition: none;
+  }
+
+  .product-detail__media:hover,
+  .product-detail__media:focus-within {
+    transform: none;
+  }
+
+  .product-detail__media:hover .product-detail__img,
+  .product-detail__media:focus-within .product-detail__img {
+    transform: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .product-detail-page {
+    padding: 24px 0 60px;
+  }
+
+  .product-detail__media {
+    padding: 20px;
+  }
+
+  .product-detail__media:hover,
+  .product-detail__media:focus-within {
+    transform: translateY(-4px);
+  }
+}

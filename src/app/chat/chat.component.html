@@ -1,0 +1,121 @@
+<div class="chat">
+  <div class="chat-content" #content>
+
+    @for (r of conversationHistory(); track $index) {
+      <div class="chat-message">
+        @if (r.role === 'user') 
+        {
+          <div class="chat-message-user">
+            <p [innerHTML]="formatText(r.text || '')"></p>
+          </div>
+        }
+        @if (r.role === 'assistant') {
+          <div class="chat-message-assistant">
+            @for (b of r.content?.blocks; track $index) {
+              @if (b.kind === 'text') {
+                <p [innerHTML]="formatText(b.text)"></p>
+              }
+    
+              @if (b.kind === 'reference') {
+                <div>
+                  <small>Ref:
+                    @if (b.url) {
+                      <a [href]="b.url" target="_blank">{{ b.title }}</a>
+                    }
+                    @if (!b.url) {
+                      <span>{{ b.title }}</span>
+                    }
+                    @if (b.score) {
+                      <span>&nbsp;({{ b.score | number:'1.0-2' }})</span>
+                    }
+                  </small>
+                  @if (b.snippet) {
+                    <div><em>{{ b.snippet }}</em></div>
+                  }
+                </div>
+              }
+    
+              @if (b.kind === 'link') {
+                <p>
+                  <a [href]="b.href" target="_blank">{{ b.label || b.href }}</a>
+                </p>
+              }
+    
+              @if (b.kind === 'image') {
+                <img [src]="b.url" class="assistant-image" [alt]="b.alt || 'image'" />
+              }
+    
+              @if (b.kind === 'chart') {
+                <pre>{{ b.spec | json }}</pre>
+              }
+            }
+    
+            @if (r.content?.products?.length) {
+              <div class="products-grid">
+                @for (p of r.content?.products; track $index) {
+                  <product-card [product]="p" />
+                }
+              </div>
+            }
+
+            @if (r.content?.citations?.length) {
+              <div class="citations-container">
+                <div class="citations-header">
+                  <span class="citations-icon">📚</span>
+                  <strong>Sources</strong>
+                </div>
+                <div class="citations-list">
+                  @for (citation of r.content?.citations; track $index) {
+                    <div class="citation-item">
+                      <span class="citation-text">
+                        <span class="citation-title">{{ citation.title || 'Source ' + ($index + 1) }}</span>
+                        @if (citation.score) {
+                          <span class="citation-score">{{ (citation.score * 100) | number:'1.0-0' }}%</span>
+                        }
+                      </span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            @if (r.content?.suggestions?.length) 
+            {
+              <div class="suggestions">
+                <strong>Try:</strong>
+                @for (s of r.content?.suggestions; track s) 
+                {
+                  <button (click)="question.set(s); send()" class="suggestion-btn">{{ s }}</button>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+      }
+
+    @if (loading()) {
+      <div class="chat-">
+        <div class="chat-message-assistant typing">
+          <span class="typing-text">Typing</span>
+          <span class="typing-dots"><span></span><span></span><span></span></span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <form (ngSubmit)="send()" class="chat-form">
+    <input [ngModel]="question()" (ngModelChange)="question.set($event)" name="q" placeholder="Ask me about Aptar products or solutions..." class="chat-input" />
+    <button type="button" (click)="clearHistory()" class="clear-btn" title="Clear conversation">
+      🗑️
+    </button>
+    <button [disabled]="loading()" class="chat-send-btn">
+      @if (!loading()) {
+        <span>Send</span>
+      }
+      @if (loading()) {
+        <span class="loading-spinner">⟳</span>
+      }
+    </button>
+  </form>
+</div>
