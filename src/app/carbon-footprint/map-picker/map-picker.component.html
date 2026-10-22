@@ -1,0 +1,35 @@
+<div class="map-picker__backdrop" (click)="close()">
+  <section class="map-picker" role="dialog" aria-modal="true" aria-labelledby="map-picker-title"
+    (click)="$event.stopPropagation()">
+    <header class="map-picker__header">
+      <div>
+        <h3 id="map-picker-title">Pick destination on map</h3>
+        <p>Click on the map where the goods will be shipped to.</p>
+      </div>
+      <button type="button" class="map-picker__close" aria-label="Close map" (click)="close()">×</button>
+    </header>
+
+    <div #mapContainer class="map-picker__map"></div>
+
+    <footer class="map-picker__footer">
+      <span class="map-picker__selection">
+        @if (pendingPoint(); as point) {
+        @if (lookingUpPlace()) {
+        Looking up place…
+        } @else {
+        Selected: <strong>{{ point.name }}</strong>
+        }
+        } @else {
+        No point selected yet
+        }
+      </span>
+      <div class="map-picker__actions">
+        <button type="button" (click)="close()">Cancel</button>
+        <button type="button" class="map-picker__confirm" [disabled]="!pendingPoint() || lookingUpPlace()"
+          (click)="confirm()">
+          Use this location
+        </button>
+      </div>
+    </footer>
+  </section>
+</div>
