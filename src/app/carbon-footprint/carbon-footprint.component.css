@@ -409,6 +409,102 @@
   box-shadow: 0 0 0 2px rgb(0 127 105 / 15%);
 }
 
+.carbon-footprint__city-picker {
+  position: relative;
+  z-index: 2;
+  display: block;
+  margin-top: 8px;
+}
+
+.carbon-footprint__city-picker input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid #cfcfcf;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #2d2d2d;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.carbon-footprint__city-picker input:focus-visible {
+  border-color: #007f69;
+  outline: 0;
+  box-shadow: 0 0 0 2px rgb(0 127 105 / 15%);
+}
+
+.carbon-footprint__city-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid #d8e0dd;
+  border-radius: 4px;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgb(25 43 48 / 15%);
+  list-style: none;
+}
+
+.carbon-footprint__city-results button {
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: #243746;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.carbon-footprint__city-results button:hover,
+.carbon-footprint__city-results button:focus-visible {
+  outline: 0;
+  background: #edf5f1;
+  color: #155b49;
+}
+
+.carbon-footprint__city-status,
+.carbon-footprint__city-attribution {
+  display: block;
+  margin-top: 5px;
+  color: #687781;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.carbon-footprint__city-error {
+  margin: 6px 0 0;
+  color: #99413a;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.carbon-footprint__city-error button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #155b49;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.carbon-footprint__city-attribution a {
+  color: #426b60;
+  text-underline-offset: 2px;
+}
+
 .carbon-footprint__energy-field {
   display: flex;
   align-items: center;
@@ -536,56 +632,69 @@
   text-align: left;
 }
 
-.carbon-footprint__warning-button {
-  display: flex;
+.carbon-footprint__assumptions-link {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 18px;
   width: 100%;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
   margin-top: auto;
-  padding: 11px 16px;
-  border: 1px solid #e4c66a;
-  border-left: 4px solid #c99500;
+  padding: 12px 10px;
+  border: 0;
+  border-top: 1px solid #e1e8e5;
   border-radius: 4px;
-  background: #fff9e8;
-  color: #574a25;
+  background: transparent;
+  color: #155b49;
   font: inherit;
   font-size: 14px;
-  font-weight: 700;
-  line-height: normal;
   text-align: left;
   cursor: pointer;
+  transition: background-color 140ms ease, color 140ms ease;
 }
 
-.carbon-footprint__warning-button > span:nth-child(2) {
+.carbon-footprint__assumptions-link-copy {
   min-width: 0;
-  flex: 1;
 }
 
-.carbon-footprint__warning-button strong {
+.carbon-footprint__assumptions-link strong,
+.carbon-footprint__assumptions-link small {
   display: block;
 }
 
-.carbon-footprint__warning-button:hover {
-  background: #fff4d2;
+.carbon-footprint__assumptions-link strong {
+  font-size: 13px;
 }
 
-.carbon-footprint__warning-icon {
+.carbon-footprint__assumptions-link small {
+  margin-top: 3px;
+  color: #6b7985;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.carbon-footprint__assumptions-link-icon {
   display: grid;
-  flex: 0 0 20px;
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   place-items: center;
-  border-radius: 50%;
-  background: #c99500;
-  color: #ffffff;
-  font-size: 12px;
-  font-weight: 700;
+  border-radius: 5px;
+  background: #e7f2ed;
+  color: #27816a;
 }
 
-.carbon-footprint__warning-arrow {
-  color: #806300;
-  font-size: 24px;
-  line-height: 1;
+.carbon-footprint__assumptions-link-arrow {
+  color: #82918e;
+  transition: transform 140ms ease, color 140ms ease;
+}
+
+.carbon-footprint__assumptions-link:hover {
+  background: #f1f7f4;
+  color: #0d604d;
+}
+
+.carbon-footprint__assumptions-link:hover .carbon-footprint__assumptions-link-arrow {
+  transform: translateX(2px);
+  color: #27816a;
 }
 
 .carbon-footprint__results {
@@ -708,7 +817,7 @@
   text-align: right;
 }
 
-.carbon-footprint__warning-button:focus-visible,
+.carbon-footprint__assumptions-link:focus-visible,
 .carbon-footprint__modal-header button:focus-visible,
 .carbon-footprint__modal-actions button:focus-visible {
   outline: 2px solid #007f69;
@@ -953,4 +1062,605 @@
     padding-left: 16px;
   }
 
+}
+
+.carbon-footprint__assumptions-modal {
+  width: min(780px, 100%);
+  max-height: calc(100vh - 24px);
+  border-radius: 8px;
+  color: #172b35;
+}
+
+.carbon-footprint__assumptions-modal.is-maximized {
+  width: min(1180px, calc(100vw - 48px));
+  height: calc(100vh - 48px);
+  max-height: calc(100vh - 48px);
+}
+
+.carbon-footprint__estimate-header {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 22px 14px;
+  background: #fbfcfc;
+}
+
+.carbon-footprint__estimate-header h3,
+.carbon-footprint__estimate-header p {
+  margin: 0;
+}
+
+.carbon-footprint__estimate-header h3 {
+  color: #10263a;
+  font-size: 23px;
+  line-height: 1.2;
+}
+
+.carbon-footprint__estimate-header p {
+  margin-top: 4px;
+  color: #5c6f80;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.carbon-footprint__estimate-header .carbon-footprint__report-eyebrow {
+  color: #5c7187;
+  letter-spacing: 0.04em;
+}
+
+.carbon-footprint__header-choice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 38px 0 auto;
+  color: #526a79;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.carbon-footprint__header-choice > span {
+  display: grid;
+  place-items: center;
+  color: #4c9a5b;
+}
+
+.carbon-footprint__estimate-controls {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  display: flex;
+  gap: 4px;
+}
+
+.carbon-footprint__estimate-controls button {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #607387;
+  cursor: pointer;
+}
+
+.carbon-footprint__estimate-controls button:hover {
+  background: #edf2f1;
+  color: #155b49;
+}
+
+.carbon-footprint__assumptions-modal svg {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.carbon-footprint__estimate-controls button:focus-visible,
+.carbon-footprint__estimate-footer button:focus-visible {
+  outline: 2px solid #007f69;
+  outline-offset: 2px;
+}
+
+.carbon-footprint__estimate-body {
+  overflow-y: auto;
+  padding: 0 22px 18px;
+  background: #fbfcfc;
+}
+
+.carbon-footprint__summary-grid {
+  display: grid;
+  grid-template-columns: 1.08fr 0.92fr;
+  gap: 12px;
+}
+
+.carbon-footprint__summary-total,
+.carbon-footprint__summary-compare {
+  min-width: 0;
+  border-radius: 6px;
+  background: #edf4ef;
+}
+
+.carbon-footprint__summary-total {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 22px 18px;
+}
+
+.carbon-footprint__leaf-mark {
+  display: grid;
+  flex: 0 0 56px;
+  width: 56px;
+  height: 56px;
+  place-items: center;
+  border-radius: 50%;
+  background: #dcece0;
+  color: #448e52;
+}
+
+.carbon-footprint__summary-total h4,
+.carbon-footprint__summary-compare h4,
+.carbon-footprint__emissions-section h4,
+.carbon-footprint__choices h4,
+.carbon-footprint__calculation-details > h4 {
+  margin: 0;
+  color: #10263a;
+  font-size: 14px;
+}
+
+.carbon-footprint__summary-total h4 {
+  margin: 1px 0 4px;
+  color: #154139;
+}
+
+.carbon-footprint__summary-total strong {
+  display: block;
+  color: #073f39;
+  font-size: clamp(27px, 4vw, 39px);
+  line-height: 1.08;
+  white-space: nowrap;
+}
+
+.carbon-footprint__summary-total > div > span {
+  display: block;
+  margin-top: 4px;
+  color: #154139;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.carbon-footprint__summary-compare {
+  padding: 13px 15px 10px;
+}
+
+.carbon-footprint__reduction {
+  display: grid;
+  grid-template-columns: 42px auto 1fr;
+  align-items: center;
+  gap: 4px;
+  margin: 4px 0 8px;
+  color: #0b433d;
+}
+
+.carbon-footprint__reduction > span:first-child {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  color: #4c9a5b;
+}
+
+.carbon-footprint__reduction strong {
+  font-size: 34px;
+  line-height: 1;
+}
+
+.carbon-footprint__reduction > span:last-child {
+  align-self: end;
+  padding-bottom: 3px;
+  font-size: 12px;
+}
+
+.carbon-footprint__compare-values {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid #d8e2dd;
+}
+
+.carbon-footprint__compare-values > div {
+  min-width: 0;
+  padding: 7px 8px 3px 0;
+}
+
+.carbon-footprint__compare-values > div + div {
+  padding-left: 10px;
+  border-left: 1px solid #d8e2dd;
+}
+
+.carbon-footprint__compare-values span,
+.carbon-footprint__compare-values strong {
+  display: block;
+}
+
+.carbon-footprint__compare-values span {
+  color: #5b6e7c;
+  font-size: 10px;
+}
+
+.carbon-footprint__compare-values strong {
+  margin-top: 2px;
+  color: #173f3c;
+  font-size: 13px;
+}
+
+.carbon-footprint__avoided {
+  margin: 4px 0 0;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: #dfede2;
+  color: #155b49;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.carbon-footprint__avoided span {
+  display: inline-grid;
+  place-items: center;
+  margin-right: 4px;
+  color: #438c50;
+  vertical-align: middle;
+}
+
+.carbon-footprint__insights-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 0 12px;
+  border-bottom: 1px solid #dfe5e5;
+}
+
+.carbon-footprint__emissions-section h4 small {
+  color: #637585;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.carbon-footprint__emissions-chart {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-top: 8px;
+}
+
+.carbon-footprint__donut {
+  display: grid;
+  flex: 0 0 144px;
+  width: 144px;
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(#08765e 0 var(--manufacturing-share), #4f9d5b var(--manufacturing-share) calc(var(--manufacturing-share) + var(--transportation-share)), #bfe2c4 calc(var(--manufacturing-share) + var(--transportation-share)) 100%);
+}
+
+.carbon-footprint__donut > div {
+  display: flex;
+  width: 62%;
+  aspect-ratio: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fbfcfc;
+  text-align: center;
+}
+
+.carbon-footprint__donut strong {
+  color: #10263a;
+  font-size: 17px;
+}
+
+.carbon-footprint__donut span {
+  color: #455a69;
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.carbon-footprint__legend,
+.carbon-footprint__choices ul {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.carbon-footprint__legend li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  color: #354b5b;
+  font-size: 12px;
+}
+
+.carbon-footprint__legend li span,
+.carbon-footprint__legend strong {
+  display: block;
+}
+
+.carbon-footprint__legend strong {
+  margin-top: 2px;
+  color: #14263b;
+  font-size: 13px;
+}
+
+.carbon-footprint__legend-dot {
+  flex: 0 0 13px;
+  width: 13px;
+  height: 13px;
+  margin-top: 2px;
+  border-radius: 50%;
+}
+
+.carbon-footprint__legend-dot--manufacturing { background: #08765e; }
+.carbon-footprint__legend-dot--transportation { background: #4f9d5b; }
+.carbon-footprint__legend-dot--end-of-life { background: #bfe2c4; }
+
+.carbon-footprint__choices {
+  padding: 14px;
+  border-radius: 6px;
+  background: #edf4ef;
+}
+
+.carbon-footprint__choices h4 {
+  margin-bottom: 12px;
+  color: #155b49;
+}
+
+.carbon-footprint__choices ul {
+  gap: 10px;
+}
+
+.carbon-footprint__choices li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  color: #24374a;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.carbon-footprint__choices li > span:first-child {
+  display: grid;
+  place-items: center;
+  color: #4a9657;
+}
+
+.carbon-footprint__calculation-details > h4 {
+  padding: 10px 0 2px;
+  font-size: 14px;
+}
+
+.carbon-footprint__assumptions-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: assumption;
+}
+
+.carbon-footprint__assumptions-list li {
+  display: grid;
+  grid-template-columns: 26px 30px minmax(0, 1fr) minmax(185px, 260px);
+  align-items: center;
+  gap: 9px;
+  padding: 7px 0;
+  counter-increment: assumption;
+}
+
+.carbon-footprint__assumptions-list li + li {
+  padding-top: 7px;
+  border-top: 1px solid #e1e6e6;
+}
+
+.carbon-footprint__assumptions-list li::before,
+.carbon-footprint__assumptions-list li + li::before {
+  position: static;
+  grid-column: 1;
+  width: 24px;
+  height: 24px;
+  background: #d8ecf7;
+  color: #3882b2;
+}
+
+.carbon-footprint__detail-icon {
+  display: grid;
+  grid-column: 2;
+  place-items: center;
+  color: #607587;
+}
+
+.carbon-footprint__detail-copy {
+  min-width: 0;
+}
+
+.carbon-footprint__assumptions-list .carbon-footprint__detail-copy strong,
+.carbon-footprint__assumptions-list .carbon-footprint__detail-copy span {
+  display: block;
+}
+
+.carbon-footprint__assumptions-list .carbon-footprint__detail-copy strong {
+  color: #14263b;
+  font-size: 12px;
+}
+
+.carbon-footprint__assumptions-list .carbon-footprint__detail-copy span {
+  margin-top: 2px;
+  color: #5c6e80;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.carbon-footprint__calc {
+  min-width: 0;
+  margin: 0;
+  padding: 8px 10px;
+  background: #eef1f5;
+  color: #40566c;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.carbon-footprint__calc strong {
+  color: #18344d;
+  font-size: 11px;
+}
+
+.carbon-footprint__assumptions-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 5px;
+  background: #eef1f5;
+  color: #52667a;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.carbon-footprint__assumptions-disclaimer > span {
+  display: grid;
+  flex: 0 0 19px;
+  width: 19px;
+  height: 19px;
+  place-items: center;
+  border-radius: 50%;
+  background: #4a91c8;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.carbon-footprint__assumptions-disclaimer > span svg {
+  width: 16px;
+  height: 16px;
+}
+
+.carbon-footprint__estimate-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 22px 14px;
+  background: #fbfcfc;
+}
+
+.carbon-footprint__estimate-footer button {
+  min-width: 96px;
+  padding: 9px 16px;
+  border: 1px solid #08765e;
+  border-radius: 5px;
+  background: #08765e;
+  color: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.carbon-footprint__estimate-footer button:hover {
+  background: #05614e;
+}
+
+@media (max-width: 720px) {
+  .carbon-footprint__estimate-header {
+    padding: 16px 16px 12px;
+  }
+
+  .carbon-footprint__estimate-header h3 {
+    max-width: 390px;
+    padding-right: 20px;
+    font-size: 20px;
+  }
+
+  .carbon-footprint__assumptions-modal.is-maximized {
+    width: calc(100vw - 24px);
+    height: calc(100vh - 24px);
+    max-height: calc(100vh - 24px);
+  }
+
+  .carbon-footprint__header-choice {
+    display: none;
+  }
+
+  .carbon-footprint__estimate-body {
+    padding: 0 16px 14px;
+  }
+
+  .carbon-footprint__summary-grid,
+  .carbon-footprint__insights-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .carbon-footprint__insights-grid {
+    gap: 12px;
+  }
+
+  .carbon-footprint__assumptions-list li {
+    grid-template-columns: 24px 26px minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .carbon-footprint__calc {
+    grid-column: 3;
+  }
+
+  .carbon-footprint__estimate-footer {
+    padding: 0 16px 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .carbon-footprint__modal-backdrop {
+    padding: 8px;
+  }
+
+  .carbon-footprint__estimate-header h3 {
+    font-size: 18px;
+  }
+
+  .carbon-footprint__summary-total {
+    gap: 10px;
+    padding: 18px 12px;
+  }
+
+  .carbon-footprint__leaf-mark {
+    flex-basis: 44px;
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
+  }
+
+  .carbon-footprint__summary-total strong {
+    font-size: 26px;
+  }
+
+  .carbon-footprint__emissions-chart {
+    gap: 12px;
+  }
+
+  .carbon-footprint__donut {
+    flex-basis: 120px;
+    width: 120px;
+  }
+
+  .carbon-footprint__legend li {
+    font-size: 10px;
+  }
+
+  .carbon-footprint__legend strong {
+    font-size: 11px;
+  }
 }

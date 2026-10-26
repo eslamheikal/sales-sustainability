@@ -62,8 +62,8 @@
       @if (destinationMode() === 'list') {
       <label class="carbon-footprint__field">
         <span>Country</span>
-        <select (change)="updateDestinationCountry($event)">
-          @for (country of countries; track country.code) {
+        <select [value]="destinationCountryCode()" (focus)="loadCityData()" (change)="updateDestinationCountry($event)">
+          @for (country of countries(); track country.code) {
           <option [value]="country.code" [selected]="country.code === destinationCountryCode()">{{ country.name }}</option>
           }
         </select>
@@ -71,11 +71,33 @@
 
       <label class="carbon-footprint__field">
         <span>City</span>
-        <select (change)="updateDestinationCity($event)">
-          @for (city of destinationCountry().cities; track city.name) {
-          <option [value]="city.name" [selected]="city.name === destinationCity().name">{{ city.name }}</option>
+        <span class="carbon-footprint__city-picker">
+          <input type="search" [value]="citySearch()"
+            placeholder="Search cities in {{ destinationCountry().name }}" autocomplete="off"
+            (focus)="loadCityData()" (input)="updateCitySearch($event)" />
+          @if (citySearch().trim().length >= 2 && matchingCities().length) {
+          <ul class="carbon-footprint__city-results" aria-label="Matching cities">
+            @for (city of matchingCities(); track city.lat + ':' + city.lng) {
+            <li><button type="button" (click)="selectDestinationCity(city)">{{ city.name }}</button></li>
+            }
+          </ul>
           }
-        </select>
+        </span>
+        @if (cityDataLoading()) {
+        <small class="carbon-footprint__city-status" role="status">Loading worldwide city data…</small>
+        } @else if (citySearch().trim().length >= 2 && !matchingCities().length && !cityDataError()) {
+        <small class="carbon-footprint__city-status" role="status">No cities found in {{ destinationCountry().name }}.</small>
+        }
+        @if (cityDataError()) {
+        <p class="carbon-footprint__city-error" role="alert">
+          Worldwide city data could not be loaded.
+          <button type="button" (click)="loadCityData()">Retry</button>
+        </p>
+        }
+        <small class="carbon-footprint__city-attribution">
+          City data from <a href="https://www.geonames.org/" target="_blank" rel="noreferrer">GeoNames</a>
+          under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>.
+        </small>
       </label>
       } @else {
       <div class="carbon-footprint__field">
@@ -135,12 +157,13 @@
 
       <br />
       
-      <button type="button" class="carbon-footprint__warning-button" (click)="openAssumptions()">
-        <span class="carbon-footprint__warning-icon" aria-hidden="true">!</span>
-        <span>
+      <button type="button" class="carbon-footprint__assumptions-link" (click)="openAssumptions()">
+        <span class="carbon-footprint__assumptions-link-icon" aria-hidden="true"><svg lucideCalculator [size]="18" [strokeWidth]="1.8"></svg></span>
+        <span class="carbon-footprint__assumptions-link-copy">
           <strong>Calculation assumptions</strong>
+          <small>See how this estimate is calculated</small>
         </span>
-        <span class="carbon-footprint__warning-arrow" aria-hidden="true">›</span>
+        <svg class="carbon-footprint__assumptions-link-arrow" lucideChevronRight [size]="18" [strokeWidth]="2"></svg>
       </button>
     </div>
   </div>
@@ -234,70 +257,118 @@
 
   @if (assumptionsOpen()) {
   <div class="carbon-footprint__modal-backdrop" (click)="closeAssumptions()">
-    <section class="carbon-footprint__modal carbon-footprint__assumptions-modal" role="dialog" aria-modal="true"
+    <section class="carbon-footprint__modal carbon-footprint__assumptions-modal"
+      [class.is-maximized]="assumptionsMaximized()" role="dialog" aria-modal="true"
       aria-labelledby="assumptions-title" (click)="$event.stopPropagation()">
-      <header class="carbon-footprint__modal-header carbon-footprint__assumptions-header">
+      <header class="carbon-footprint__estimate-header">
         <div>
-          <span class="carbon-footprint__report-eyebrow">Important calculation context</span>
-          <h3 id="assumptions-title">Calculation Assumptions</h3>
-          <p>Step-by-step calculation for your current order configuration.</p>
+          <span class="carbon-footprint__report-eyebrow">Carbon footprint estimate</span>
+          <h3 id="assumptions-title">A more sustainable choice</h3>
+          <p>See the estimated carbon emissions for your current order configuration.</p>
         </div>
-        <button type="button" aria-label="Close assumptions" (click)="closeAssumptions()">×</button>
+        <span class="carbon-footprint__header-choice"><span aria-hidden="true"><svg lucideLeaf [size]="28" [strokeWidth]="1.8"></svg></span> Smaller footprint<br />for a brighter tomorrow</span>
+        <div class="carbon-footprint__estimate-controls">
+          <button type="button" [attr.aria-label]="assumptionsMaximized() ? 'Restore assumptions dialog' : 'Maximize assumptions dialog'"
+            [attr.title]="assumptionsMaximized() ? 'Restore' : 'Maximize'" (click)="toggleAssumptionsMaximized()">
+            @if (assumptionsMaximized()) {
+            <svg lucideMinimize2 [size]="17" [strokeWidth]="1.8"></svg>
+            } @else {
+            <svg lucideMaximize2 [size]="17" [strokeWidth]="1.8"></svg>
+            }
+          </button>
+          <button type="button" aria-label="Close assumptions" title="Close" (click)="closeAssumptions()"><svg lucideX [size]="18" [strokeWidth]="2"></svg></button>
+        </div>
       </header>
 
-      <div class="carbon-footprint__modal-body">
-        <ol class="carbon-footprint__assumptions-list">
-          <li>
-            <strong>Manufacturing</strong>
-            <span>Base × material factor ({{ materialLabel() }}) × energy factor ({{ renewableEnergySite() ? 'renewable'
-              : 'conventional' }})</span>
-            <code class="carbon-footprint__calc">
-                  {{ baseManufacturingEmissions | number: '1.2-2' }} × {{ materialFactor() | number: '1.2-2' }} × {{ energyFactor() | number: '1.2-2' }}
-                  = {{ manufacturingEmissions() | number: '1.3-3' }} kg CO<sub>2</sub>e/unit
-                </code>
-          </li>
-          <li>
-            <strong>Transportation</strong>
-            <span>Distance from {{ productionPlant().name }} to {{ destinationLabel() }} (straight line ×
-              {{ routeDetourFactor }} route factor) × emission factor per km</span>
-            <code class="carbon-footprint__calc">
-                  {{ transportationDistance() | number: '1.0-0' }} km × {{ transportationFactorPerKm }}
-                  = {{ transportationEmissions() | number: '1.3-3' }} kg CO<sub>2</sub>e/unit
-                </code>
-          </li>
-          <li>
-            <strong>Recycling / disposal</strong>
-            <span>Fixed placeholder value</span>
-            <code class="carbon-footprint__calc">
-                  = {{ endOfLifeEmissions | number: '1.3-3' }} kg CO<sub>2</sub>e/unit
-                </code>
-          </li>
-          <li>
-            <strong>Total emissions per unit</strong>
-            <span>Manufacturing + Transportation + Recycling / disposal</span>
-            <code class="carbon-footprint__calc">
-                  {{ manufacturingEmissions() | number: '1.3-3' }} + {{ transportationEmissions() | number: '1.3-3' }} + {{ endOfLifeEmissions | number: '1.3-3' }}
-                  = {{ emissionsPerUnit() | number: '1.3-3' }} kg CO<sub>2</sub>e/unit
-                </code>
-          </li>
-          <li>
-            <strong>Total carbon emissions</strong>
-            <span>Emissions per unit × order volume</span>
-            <code class="carbon-footprint__calc">
-                  {{ emissionsPerUnit() | number: '1.3-3' }} × {{ orderVolume() | number: '1.0-0' }} units
-                  = {{ totalEmissions() | number: '1.0-2' }} kg CO<sub>2</sub>e
-                  @if (displayInTonnes()) {
-                    ({{ displayedTotalEmissions() | number: '1.0-2' }} tonnes)
-                  }
-                </code>
-          </li>
-        </ol>
+      <div class="carbon-footprint__estimate-body">
+        <div class="carbon-footprint__summary-grid">
+          <section class="carbon-footprint__summary-total" aria-label="Total carbon emissions">
+            <span class="carbon-footprint__leaf-mark" aria-hidden="true"><svg lucideLeaf [size]="30" [strokeWidth]="1.8"></svg></span>
+            <div>
+              <h4>Total carbon emissions</h4>
+              <strong>{{ displayedTotalEmissions() | number: '1.2-2' }} {{ displayInTonnes() ? 't' : 'kg' }} CO<sub>2</sub>e</strong>
+              <span>for {{ orderVolume() | number: '1.0-0' }} units</span>
+            </div>
+          </section>
 
-        <p class="carbon-footprint__assumptions-disclaimer">
-          These values are placeholders until product-specific sustainability data is provided.
-        </p>
+          <section class="carbon-footprint__summary-compare" aria-label="Comparison to standard configuration">
+            <h4>Compared to a standard configuration</h4>
+            <div class="carbon-footprint__reduction">
+              <span aria-hidden="true"><svg lucideArrowDown [size]="40" [strokeWidth]="3"></svg></span>
+              <strong>{{ reductionPercent() | number: '1.0-0' }}%</strong>
+              <span>lower carbon footprint</span>
+            </div>
+            <div class="carbon-footprint__compare-values">
+              <div><span>Standard configuration</span><strong>{{ (displayInTonnes() ? standardTotalEmissions() / 1000 : standardTotalEmissions()) | number: '1.2-2' }} {{ displayInTonnes() ? 't' : 'kg' }} CO<sub>2</sub>e</strong></div>
+              <div><span>Your configuration</span><strong>{{ displayedTotalEmissions() | number: '1.2-2' }} {{ displayInTonnes() ? 't' : 'kg' }} CO<sub>2</sub>e</strong></div>
+            </div>
+            <p class="carbon-footprint__avoided"><span aria-hidden="true"><svg lucideLeaf [size]="16" [strokeWidth]="2"></svg></span> {{ (displayInTonnes() ? avoidedEmissions() / 1000 : avoidedEmissions()) | number: '1.2-2' }} {{ displayInTonnes() ? 't' : 'kg' }} CO<sub>2</sub>e avoided</p>
+          </section>
+        </div>
+
+        <div class="carbon-footprint__insights-grid">
+          <section class="carbon-footprint__emissions-section" aria-labelledby="emissions-breakdown-title">
+            <h4 id="emissions-breakdown-title">Emission breakdown <small>(per unit)</small></h4>
+            <div class="carbon-footprint__emissions-chart">
+              <div class="carbon-footprint__donut" role="img"
+                [attr.aria-label]="'Emissions per unit: ' + (emissionsPerUnit() | number: '1.3-3') + ' kilograms CO2e'"
+                [style.--manufacturing-share]="manufacturingShare() + '%'"
+                [style.--transportation-share]="transportationShare() + '%'">
+                <div><strong>{{ emissionsPerUnit() | number: '1.3-3' }}</strong><span>kg CO<sub>2</sub>e<br />per unit</span></div>
+              </div>
+              <ul class="carbon-footprint__legend">
+                <li><i class="carbon-footprint__legend-dot carbon-footprint__legend-dot--manufacturing"></i><span>Manufacturing<strong>{{ manufacturingEmissions() | number: '1.3-3' }} kg ({{ manufacturingShare() | number: '1.0-0' }}%)</strong></span></li>
+                <li><i class="carbon-footprint__legend-dot carbon-footprint__legend-dot--transportation"></i><span>Transportation<strong>{{ transportationEmissions() | number: '1.3-3' }} kg ({{ transportationShare() | number: '1.0-0' }}%)</strong></span></li>
+                <li><i class="carbon-footprint__legend-dot carbon-footprint__legend-dot--end-of-life"></i><span>Recycling / disposal<strong>{{ endOfLifeEmissions | number: '1.3-3' }} kg ({{ endOfLifeShare() | number: '1.0-0' }}%)</strong></span></li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="carbon-footprint__choices" aria-labelledby="choices-title">
+            <h4 id="choices-title">Your sustainability choices</h4>
+            <ul>
+              <li><span aria-hidden="true"><svg lucideRecycle [size]="25" [strokeWidth]="1.8"></svg></span><span>Contains {{ materialLabel() }}</span></li>
+              <li><span aria-hidden="true"><svg lucideLeaf [size]="25" [strokeWidth]="1.8"></svg></span><span>{{ renewableEnergySite() ? 'Renewable energy manufacturing factor applied' : 'Conventional energy manufacturing factor applied' }}</span></li>
+              <li><span aria-hidden="true"><svg lucideTruck [size]="25" [strokeWidth]="1.8"></svg></span><span>Based on current transport route and end-of-life assumptions</span></li>
+            </ul>
+          </section>
+        </div>
+
+        <section class="carbon-footprint__calculation-details" aria-labelledby="calculation-details-title">
+          <h4 id="calculation-details-title">Calculation details</h4>
+          <ol class="carbon-footprint__assumptions-list">
+            <li>
+              <span class="carbon-footprint__detail-icon" aria-hidden="true"><svg lucideFactory [size]="22" [strokeWidth]="1.8"></svg></span>
+              <div class="carbon-footprint__detail-copy"><strong>Manufacturing</strong><span>Base × material factor ({{ materialLabel() }}) × energy factor ({{ renewableEnergySite() ? 'renewable' : 'conventional' }})</span></div>
+              <code class="carbon-footprint__calc">{{ baseManufacturingEmissions | number: '1.2-2' }} × {{ materialFactor() | number: '1.2-2' }} × {{ energyFactor() | number: '1.2-2' }} = <strong>{{ manufacturingEmissions() | number: '1.3-3' }} kg CO<sub>2</sub>e/unit</strong></code>
+            </li>
+            <li>
+              <span class="carbon-footprint__detail-icon" aria-hidden="true"><svg lucideTruck [size]="22" [strokeWidth]="1.8"></svg></span>
+              <div class="carbon-footprint__detail-copy"><strong>Transportation</strong><span>{{ transportationDistance() | number: '1.0-0' }} km from {{ productionPlant().name }} to {{ destinationLabel() }} × {{ routeDetourFactor }} route factor × emission factor per km</span></div>
+              <code class="carbon-footprint__calc">{{ transportationDistance() | number: '1.0-0' }} km × {{ transportationFactorPerKm }} = <strong>{{ transportationEmissions() | number: '1.3-3' }} kg CO<sub>2</sub>e/unit</strong></code>
+            </li>
+            <li>
+              <span class="carbon-footprint__detail-icon" aria-hidden="true"><svg lucideRecycle [size]="22" [strokeWidth]="1.8"></svg></span>
+              <div class="carbon-footprint__detail-copy"><strong>Recycling / disposal</strong><span>Fixed placeholder value</span></div>
+              <code class="carbon-footprint__calc">= <strong>{{ endOfLifeEmissions | number: '1.3-3' }} kg CO<sub>2</sub>e/unit</strong></code>
+            </li>
+            <li>
+              <span class="carbon-footprint__detail-icon" aria-hidden="true"><svg lucideCalculator [size]="22" [strokeWidth]="1.8"></svg></span>
+              <div class="carbon-footprint__detail-copy"><strong>Total emissions per unit</strong><span>Manufacturing + Transportation + Recycling / disposal</span></div>
+              <code class="carbon-footprint__calc">{{ manufacturingEmissions() | number: '1.3-3' }} + {{ transportationEmissions() | number: '1.3-3' }} + {{ endOfLifeEmissions | number: '1.3-3' }} = <strong>{{ emissionsPerUnit() | number: '1.3-3' }} kg CO<sub>2</sub>e/unit</strong></code>
+            </li>
+            <li>
+              <span class="carbon-footprint__detail-icon" aria-hidden="true"><svg lucidePackage [size]="22" [strokeWidth]="1.8"></svg></span>
+              <div class="carbon-footprint__detail-copy"><strong>Total carbon emissions</strong><span>Emissions per unit × order volume ({{ orderVolume() | number: '1.0-0' }} units)</span></div>
+              <code class="carbon-footprint__calc">{{ emissionsPerUnit() | number: '1.3-3' }} × {{ orderVolume() | number: '1.0-0' }} = <strong>{{ totalEmissions() | number: '1.2-2' }} kg CO<sub>2</sub>e@if (displayInTonnes()) { ({{ displayedTotalEmissions() | number: '1.2-2' }} tonnes) }</strong></code>
+            </li>
+          </ol>
+        </section>
+
+        <p class="carbon-footprint__assumptions-disclaimer"><span aria-hidden="true"><svg lucideInfo [size]="16" [strokeWidth]="2"></svg></span> This estimate helps you understand the environmental impact of your selected configuration and supports more sustainable purchasing decisions. Values are placeholders until product-specific sustainability data is provided.</p>
       </div>
-      <footer class="carbon-footprint__modal-actions">
+
+      <footer class="carbon-footprint__estimate-footer">
         <button type="button" (click)="closeAssumptions()">Close</button>
       </footer>
     </section>

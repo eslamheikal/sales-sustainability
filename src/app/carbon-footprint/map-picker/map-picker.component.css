@@ -48,6 +48,127 @@
   cursor: pointer;
 }
 
+.map-picker__search {
+  position: relative;
+  z-index: 1100;
+  padding: 0 20px 10px;
+  background: #fff;
+}
+
+.map-picker__search-form {
+  display: flex;
+  gap: 8px;
+}
+
+.map-picker__search-form input {
+  min-width: 0;
+  flex: 1;
+  padding: 9px 11px;
+  border: 1px solid #cbd5d2;
+  border-radius: 5px;
+  background: #fff;
+  color: #243746;
+  font: inherit;
+  font-size: 13px;
+}
+
+.map-picker__search-form input:focus-visible {
+  border-color: #27816a;
+  outline: 2px solid rgb(39 129 106 / 20%);
+  outline-offset: 1px;
+}
+
+.map-picker__search-form button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 92px;
+  padding: 8px 12px;
+  border: 1px solid #08765e;
+  border-radius: 5px;
+  background: #08765e;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.map-picker__search-form button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.map-picker__search-form button svg {
+  display: block;
+}
+
+.map-picker__search-attribution,
+.map-picker__search-message {
+  margin: 5px 0 0;
+  color: #657582;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.map-picker__search-attribution a {
+  color: #426b60;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.map-picker__search-message {
+  color: #9c3d36;
+  font-size: 11px;
+}
+
+.map-picker__search-results {
+  position: absolute;
+  top: calc(100% - 8px);
+  right: 20px;
+  left: 20px;
+  max-height: 220px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid #d9e1df;
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgb(25 43 48 / 18%);
+  list-style: none;
+}
+
+.map-picker__search-results button {
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: #243746;
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.map-picker__search-results button:hover,
+.map-picker__search-results button:focus-visible {
+  outline: 0;
+  background: #edf5f1;
+  color: #155b49;
+}
+
+.map-picker__visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
 .map-picker__map {
   height: min(520px, 60vh);
   cursor: crosshair;

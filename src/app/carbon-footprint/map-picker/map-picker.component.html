@@ -4,10 +4,37 @@
     <header class="map-picker__header">
       <div>
         <h3 id="map-picker-title">Pick destination on map</h3>
-        <p>Click on the map where the goods will be shipped to.</p>
+        <p>Search for a place or click on the map to set your destination.</p>
       </div>
       <button type="button" class="map-picker__close" aria-label="Close map" (click)="close()">×</button>
     </header>
+
+    <section class="map-picker__search" aria-label="Search for a destination">
+      <form class="map-picker__search-form" (submit)="searchPlace($event)">
+        <label class="map-picker__visually-hidden" for="destination-search">Place, address, or city</label>
+        <input id="destination-search" type="search" placeholder="Search a place or address"
+          autocomplete="off" minlength="2" required [value]="placeQuery()"
+          (input)="updatePlaceQuery($event)" />
+        <button type="submit" [disabled]="searchingPlaces() || !mapReady() || placeQuery().trim().length < 2">
+          <svg lucideSearch [size]="16" [strokeWidth]="2"></svg>
+          <span>{{ searchingPlaces() ? 'Searching' : 'Search' }}</span>
+        </button>
+      </form>
+      <p class="map-picker__search-attribution">Search powered by <a href="https://nominatim.openstreetmap.org/"
+        target="_blank" rel="noreferrer">OpenStreetMap Nominatim</a></p>
+      @if (placeSearchError(); as error) {
+      <p class="map-picker__search-message" role="alert">{{ error }}</p>
+      }
+      @if (searchResults().length) {
+      <ul class="map-picker__search-results" aria-label="Matching places">
+        @for (place of searchResults(); track place.lat + ':' + place.lng) {
+        <li>
+          <button type="button" (click)="selectSearchResult(place)">{{ place.name }}</button>
+        </li>
+        }
+      </ul>
+      }
+    </section>
 
     <div #mapContainer class="map-picker__map"></div>
 

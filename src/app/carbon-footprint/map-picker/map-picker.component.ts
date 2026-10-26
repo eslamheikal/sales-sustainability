@@ -10,12 +10,20 @@ import {
   signal,
 } from '@angular/core';
 import type * as Leaflet from 'leaflet';
+import { LucideSearch } from '@lucide/angular';
 import { GeoLocation } from '../shipping-locations.data';
+
+interface PlaceSearchResult {
+  display_name: string;
+  lat: string;
+  lon: string;
+  address?: Record<string, string>;
+}
 
 @Component({
   selector: 'app-map-picker',
   standalone: true,
-  imports: [],
+  imports: [LucideSearch],
   templateUrl: './map-picker.component.html',
   styleUrl: './map-picker.component.css',
 })
@@ -29,12 +37,20 @@ export class MapPickerComponent implements AfterViewInit, OnDestroy {
 
   readonly pendingPoint = signal<GeoLocation | null>(null);
   readonly lookingUpPlace = signal(false);
+  readonly mapReady = signal(false);
+  readonly placeQuery = signal('');
+  readonly searchResults = signal<GeoLocation[]>([]);
+  readonly searchingPlaces = signal(false);
+  readonly placeSearchError = signal<string | null>(null);
 
   private L?: typeof Leaflet;
   private map?: Leaflet.Map;
   private destinationMarker?: Leaflet.CircleMarker;
   private routeLine?: Leaflet.Polyline;
   private placeLookup?: AbortController;
+  private placeSearchLookup?: AbortController;
+  private nominatimRequestQueue: Promise<void> = Promise.resolve();
+  private lastNominatimRequestAt = 0;
   private destroyed = false;
 
   async ngAfterViewInit(): Promise<void> {
@@ -63,9 +79,15 @@ export class MapPickerComponent implements AfterViewInit, OnDestroy {
 
     this.map.on('click', (event: Leaflet.LeafletMouseEvent) => {
       const { lat, lng } = event.latlng.wrap();
+      this.placeSearchLookup?.abort();
+      this.searchingPlaces.set(false);
+      this.searchResults.set([]);
+      this.placeSearchError.set(null);
       this.setPoint({ name: `Map point (${lat.toFixed(2)}, ${lng.toFixed(2)})`, lat, lng });
       this.lookUpPlaceName(lat, lng);
     });
+
+    this.mapReady.set(true);
 
     // The map is created inside a modal that is still sizing itself.
     setTimeout(() => this.map?.invalidateSize());
@@ -74,7 +96,63 @@ export class MapPickerComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroyed = true;
     this.placeLookup?.abort();
+    this.placeSearchLookup?.abort();
     this.map?.remove();
+  }
+
+  updatePlaceQuery(event: Event): void {
+    this.placeQuery.set((event.target as HTMLInputElement).value);
+    this.placeSearchLookup?.abort();
+    this.searchingPlaces.set(false);
+    this.searchResults.set([]);
+    this.placeSearchError.set(null);
+  }
+
+  async searchPlace(event: SubmitEvent): Promise<void> {
+    event.preventDefault();
+    const query = this.placeQuery().trim();
+    if (query.length < 2 || !this.mapReady()) return;
+
+    this.placeSearchLookup?.abort();
+    const lookup = new AbortController();
+    this.placeSearchLookup = lookup;
+    this.searchingPlaces.set(true);
+    this.placeSearchError.set(null);
+    this.searchResults.set([]);
+
+    try {
+      if (!(await this.waitForNominatimSlot(lookup.signal))) return;
+      const url =
+        'https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&accept-language=en' +
+        `&q=${encodeURIComponent(query)}`;
+      const response = await fetch(url, { signal: lookup.signal });
+      if (!response.ok) throw new Error('Place search failed');
+
+      const results = (await response.json()) as PlaceSearchResult[];
+      if (lookup.signal.aborted) return;
+
+      const places = results
+        .map((result): GeoLocation | null => {
+          const lat = Number(result.lat);
+          const lng = Number(result.lon);
+          if (!result.display_name || !Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+          return { name: this.formatPlaceName(result.address) ?? result.display_name, lat, lng };
+        })
+        .filter((place): place is GeoLocation => place !== null);
+
+      this.searchResults.set(places);
+      if (!places.length) this.placeSearchError.set('No matching places found. Try a nearby city or address.');
+    } catch {
+      if (!lookup.signal.aborted) this.placeSearchError.set('Place search is unavailable right now. Please try again.');
+    } finally {
+      if (this.placeSearchLookup === lookup) this.searchingPlaces.set(false);
+    }
+  }
+
+  selectSearchResult(point: GeoLocation): void {
+    this.setPoint(point);
+    this.map?.flyTo([point.lat, point.lng], Math.max(this.map.getZoom(), 10), { duration: 0.45 });
+    this.searchResults.set([]);
   }
 
   confirm(): void {
@@ -95,6 +173,7 @@ export class MapPickerComponent implements AfterViewInit, OnDestroy {
     this.lookingUpPlace.set(true);
 
     try {
+      if (!(await this.waitForNominatimSlot(lookup.signal))) return;
       const url =
         'https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=10&accept-language=en' +
         `&lat=${lat}&lon=${lng}`;
@@ -113,6 +192,26 @@ export class MapPickerComponent implements AfterViewInit, OnDestroy {
       if (this.placeLookup === lookup) {
         this.lookingUpPlace.set(false);
       }
+    }
+  }
+
+  private async waitForNominatimSlot(signal: AbortSignal): Promise<boolean> {
+    const previousRequest = this.nominatimRequestQueue;
+    let releaseRequest: () => void = () => {};
+    this.nominatimRequestQueue = new Promise<void>((resolve) => {
+      releaseRequest = resolve;
+    });
+
+    await previousRequest;
+    try {
+      if (signal.aborted || this.destroyed) return false;
+      const waitMs = Math.max(0, 1000 - (Date.now() - this.lastNominatimRequestAt));
+      if (waitMs > 0) await new Promise<void>((resolve) => setTimeout(resolve, waitMs));
+      if (signal.aborted || this.destroyed) return false;
+      this.lastNominatimRequestAt = Date.now();
+      return true;
+    } finally {
+      releaseRequest();
     }
   }
 
