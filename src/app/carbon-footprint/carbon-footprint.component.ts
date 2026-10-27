@@ -176,6 +176,22 @@ export class CarbonFootprintComponent {
 
   readonly avoidedEmissions = computed(() => Math.max(this.standardTotalEmissions() - this.totalEmissions(), 0));
 
+  readonly comparisonInTonnes = computed(
+    () => this.standardTotalEmissions() >= 1000 || this.totalEmissions() >= 1000
+  );
+
+  readonly displayedStandardTotal = computed(() =>
+    this.comparisonInTonnes() ? this.standardTotalEmissions() / 1000 : this.standardTotalEmissions()
+  );
+
+  readonly displayedComparisonTotal = computed(() =>
+    this.comparisonInTonnes() ? this.totalEmissions() / 1000 : this.totalEmissions()
+  );
+
+  readonly displayedAvoidedEmissions = computed(() =>
+    this.comparisonInTonnes() ? this.avoidedEmissions() / 1000 : this.avoidedEmissions()
+  );
+
   readonly reductionPercent = computed(() =>
     this.standardTotalEmissions() > 0 ? (this.avoidedEmissions() / this.standardTotalEmissions()) * 100 : 0
   );

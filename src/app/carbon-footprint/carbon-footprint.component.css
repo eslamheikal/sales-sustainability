@@ -734,6 +734,73 @@
   font-weight: 700;
 }
 
+.carbon-footprint__comparison {
+  margin: 8px 0 12px;
+  padding: 12px 0 10px;
+  border-top: 1px solid #dfe7e3;
+  border-bottom: 1px solid #dfe7e3;
+}
+
+.carbon-footprint__comparison h4 {
+  margin: 0 0 9px;
+  color: #243746;
+  font-size: 13px;
+}
+
+.carbon-footprint__comparison-values {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.carbon-footprint__comparison-values > div {
+  min-width: 0;
+  padding-right: 10px;
+}
+
+.carbon-footprint__comparison-values > div + div {
+  padding-left: 12px;
+  border-left: 1px solid #dfe7e3;
+}
+
+.carbon-footprint__comparison-values span,
+.carbon-footprint__comparison-values strong {
+  display: block;
+}
+
+.carbon-footprint__comparison-values span {
+  color: #667681;
+  font-size: 11px;
+}
+
+.carbon-footprint__comparison-values strong {
+  margin-top: 3px;
+  color: #153f39;
+  font-size: 15px;
+}
+
+.carbon-footprint__comparison-savings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin: 9px 0 0;
+  color: #176a52;
+  font-size: 12px;
+}
+
+.carbon-footprint__comparison-savings strong {
+  font-size: 14px;
+}
+
+.carbon-footprint__comparison-savings svg {
+  color: #4b9857;
+}
+
+.carbon-footprint__comparison-savings--equal {
+  color: #667681;
+  font-size: 11px;
+}
+
 .carbon-footprint__formula {
   display: flex;
   flex-wrap: wrap;

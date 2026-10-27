@@ -128,6 +128,31 @@
         <span>{{ displayInTonnes() ? 'tonnes' : 'kg' }} CO<sub>2</sub>e</span>
       </div>
 
+      <section class="carbon-footprint__comparison" aria-label="Comparison with standard configuration">
+        <h4>Compared to a standard configuration</h4>
+        <div class="carbon-footprint__comparison-values">
+          <div>
+            <span>Standard configuration</span>
+            <strong>{{ displayedStandardTotal() | number: '1.2-2' }} {{ comparisonInTonnes() ? 't' : 'kg' }} CO<sub>2</sub>e</strong>
+          </div>
+          <div>
+            <span>Your configuration</span>
+            <strong>{{ displayedComparisonTotal() | number: '1.2-2' }} {{ comparisonInTonnes() ? 't' : 'kg' }} CO<sub>2</sub>e</strong>
+          </div>
+        </div>
+        @if (reductionPercent() > 0) {
+        <p class="carbon-footprint__comparison-savings">
+          <svg lucideArrowDown [size]="20" [strokeWidth]="2.5" aria-hidden="true"></svg>
+          <strong>{{ reductionPercent() | number: '1.0-0' }}% lower</strong>
+          <span>{{ displayedAvoidedEmissions() | number: '1.2-2' }} {{ comparisonInTonnes() ? 't' : 'kg' }} CO<sub>2</sub>e avoided</span>
+        </p>
+        } @else {
+        <p class="carbon-footprint__comparison-savings carbon-footprint__comparison-savings--equal">
+          Same emissions as the standard configuration
+        </p>
+        }
+      </section>
+
       <p class="carbon-footprint__formula">
         {{ emissionsPerUnit() | number: '1.3-3' }} kg CO<sub>2</sub>e/unit
         <span aria-hidden="true">×</span>
@@ -299,10 +324,10 @@
               <span>lower carbon footprint</span>
             </div>
             <div class="carbon-footprint__compare-values">
-              <div><span>Standard configuration</span><strong>{{ (displayInTonnes() ? standardTotalEmissions() / 1000 : standardTotalEmissions()) | number: '1.2-2' }} {{ displayInTonnes() ? 't' : 'kg' }} CO<sub>2</sub>e</strong></div>
-              <div><span>Your configuration</span><strong>{{ displayedTotalEmissions() | number: '1.2-2' }} {{ displayInTonnes() ? 't' : 'kg' }} CO<sub>2</sub>e</strong></div>
+              <div><span>Standard configuration</span><strong>{{ displayedStandardTotal() | number: '1.2-2' }} {{ comparisonInTonnes() ? 't' : 'kg' }} CO<sub>2</sub>e</strong></div>
+              <div><span>Your configuration</span><strong>{{ displayedComparisonTotal() | number: '1.2-2' }} {{ comparisonInTonnes() ? 't' : 'kg' }} CO<sub>2</sub>e</strong></div>
             </div>
-            <p class="carbon-footprint__avoided"><span aria-hidden="true"><svg lucideLeaf [size]="16" [strokeWidth]="2"></svg></span> {{ (displayInTonnes() ? avoidedEmissions() / 1000 : avoidedEmissions()) | number: '1.2-2' }} {{ displayInTonnes() ? 't' : 'kg' }} CO<sub>2</sub>e avoided</p>
+            <p class="carbon-footprint__avoided"><span aria-hidden="true"><svg lucideLeaf [size]="16" [strokeWidth]="2"></svg></span> {{ displayedAvoidedEmissions() | number: '1.2-2' }} {{ comparisonInTonnes() ? 't' : 'kg' }} CO<sub>2</sub>e avoided</p>
           </section>
         </div>
 
