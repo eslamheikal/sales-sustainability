@@ -68,12 +68,6 @@
   background: linear-gradient(135deg, #f1f8f6 0%, #ffffff 70%);
 }
 
-.carbon-footprint__slide-icon {
-  display: block;
-  margin-bottom: 12px;
-  font-size: 44px;
-}
-
 .carbon-footprint__slide h3 {
   margin: 0 0 10px;
   color: #2d2d2d;
@@ -723,11 +717,6 @@
   line-height: 1;
 }
 
-.carbon-footprint__metric-number {
-  color: #007f69;
-  font-weight: 700;
-}
-
 .carbon-footprint__total > span:last-child {
   color: #3d3d3d;
   font-size: 14px;
@@ -811,50 +800,6 @@
   font-size: 13px;
 }
 
-.carbon-footprint__savings,
-.carbon-footprint__baseline {
-  margin: 0;
-  padding: 14px;
-  border-left: 3px solid #007f69;
-  background: #eef8f5;
-}
-
-.carbon-footprint__savings span,
-.carbon-footprint__savings strong,
-.carbon-footprint__savings small {
-  display: block;
-}
-
-.carbon-footprint__savings span {
-  color: #006755;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  justify-content: space-between;
-}
-
-.carbon-footprint__savings strong {
-  margin-top: 4px;
-  color: #2d2d2d;
-  font-size: 13px;
-}
-
-.carbon-footprint__savings small {
-  margin-top: 5px;
-  color: #686868;
-  font-size: 11px;
-}
-
-.carbon-footprint__savings-value {
-  font-weight: 700;
-  color: #2d2d2d;
-}
-
-.carbon-footprint__baseline {
-  color: #5f5f5f;
-  font-size: 13px;
-}
-
 .carbon-footprint__breakdown {
   margin: 0;
   border-top: 1px solid #e8e8e8;
@@ -885,8 +830,8 @@
 }
 
 .carbon-footprint__assumptions-link:focus-visible,
-.carbon-footprint__modal-header button:focus-visible,
-.carbon-footprint__modal-actions button:focus-visible {
+.carbon-footprint__estimate-controls button:focus-visible,
+.carbon-footprint__estimate-footer button:focus-visible {
   outline: 2px solid #007f69;
   outline-offset: 2px;
 }
@@ -911,32 +856,6 @@
   box-shadow: 0 18px 50px rgb(0 0 0 / 28%);
 }
 
-.carbon-footprint__modal-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 20px 24px;
-  border-bottom: 1px solid #e8e8e8;
-  background: #f7f8f7;
-}
-
-.carbon-footprint__modal-header h3,
-.carbon-footprint__modal-header p {
-  margin: 0;
-}
-
-.carbon-footprint__modal-header h3 {
-  color: #2d2d2d;
-  font-size: 18px;
-}
-
-.carbon-footprint__modal-header p {
-  margin-top: 4px;
-  color: #747474;
-  font-size: 13px;
-}
-
 .carbon-footprint__report-eyebrow {
   display: block;
   margin-bottom: 5px;
@@ -946,74 +865,9 @@
   text-transform: uppercase;
 }
 
-.carbon-footprint__modal-header button {
-  display: grid;
-  flex: 0 0 32px;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  place-items: center;
-  border: 0;
-  border-radius: 4px;
-  background: #f1f1f1;
-  color: #3d3d3d;
-  font-size: 24px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.carbon-footprint__modal-body {
-  padding: 20px 24px;
-  overflow: visible;
-}
-
-.carbon-footprint__bar {
-  display: block;
-  height: 7px;
-  overflow: hidden;
-  border-radius: 4px;
-  background: #e6e9e8;
-}
-
-.carbon-footprint__bar i {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: #007f69;
-}
-
-.carbon-footprint__modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  padding: 14px 24px;
-  border-top: 1px solid #e8e8e8;
-  background: #f7f8f7;
-}
-
-.carbon-footprint__modal-actions button {
-  min-width: 96px;
-  padding: 9px 16px;
-  border: 1px solid #007f69;
-  border-radius: 4px;
-  background: #007f69;
-  color: #ffffff;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.carbon-footprint__modal-actions button:hover {
-  background: #006755;
-}
-
 .carbon-footprint__assumptions-modal {
   width: min(620px, 100%);
   max-height: calc(100vh - 32px);
-}
-
-.carbon-footprint__assumptions-modal .carbon-footprint__modal-body {
-  overflow-y: auto;
 }
 
 .carbon-footprint__calc {
@@ -1024,15 +878,6 @@
   background: #f4f6f4;
   color: #2f4f3a;
   font-size: 12px;
-}
-
-.carbon-footprint__assumptions-header {
-  border-top: 4px solid #c99500;
-  background: #fffaf0;
-}
-
-.carbon-footprint__assumptions-header .carbon-footprint__report-eyebrow {
-  color: #806300;
 }
 
 .carbon-footprint__assumptions-list {
@@ -1120,13 +965,6 @@
 
   .carbon-footprint__modal-backdrop {
     padding: 12px;
-  }
-
-  .carbon-footprint__modal-header,
-  .carbon-footprint__modal-body,
-  .carbon-footprint__modal-actions {
-    padding-right: 16px;
-    padding-left: 16px;
   }
 
 }
